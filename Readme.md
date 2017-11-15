@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Михаил Москалев](https://up.htmlacademy.ru/javascript/11/user/158040).
-* Наставник: `Неизвестно`.
+* Наставник: [Антон Кричевский](https://htmlacademy.ru/profile/id571539).
 
 ---
 
