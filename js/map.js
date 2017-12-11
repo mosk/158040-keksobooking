@@ -1,0 +1,82 @@
+'use strict';
+
+var NUMBER_OF_ADVERTS = 8;
+
+var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде', 'Проклятый старый дом'];
+var TYPES = ['flat', 'house', 'bungalo'];
+
+var MIN_PRICE = 0;
+var MAX_PRICE = 1000;
+
+var MIN_ROOMS = 1;
+var MAX_ROOMS = 5;
+
+var MIN_GUESTS = 0;
+var MAX_GUESTS = 300;
+
+var CHECKIN_TIME = ['12:00', '13:00', '14:00'];
+var CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
+
+var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+
+var LOCATION = {
+  x: {
+    min: 300,
+    max: 900
+  },
+  y: {
+    min: 100,
+    max: 500
+  }
+};
+
+function getRandomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function getRandomElement(array) {
+  var randomNumber = Math.round(getRandomNumber(0, array.length - 1));
+
+  return array[randomNumber];
+}
+
+function getRandomArray(array) {
+  var randomString = [];
+  var randomElement = randomString[i];
+
+  for (var i = 0; i < Math.round(getRandomNumber(0, array.length - 1)); i++) {
+    var newElement = getRandomElement(array);
+    if (newElement !== randomElement) {
+      randomElement = newElement;
+      randomString.push(randomElement);
+    }
+  }
+
+  return randomString;
+}
+
+var advert = {
+  author: {
+    avatar: 'img/avatars/user' + 0 + Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS)) + '.png'
+  },
+  offer: {
+    title: getRandomElement(TITLES),
+    address: location.x + ', ' + location.y,
+    price: Math.round(getRandomNumber(MIN_PRICE, MAX_PRICE)),
+    type: getRandomElement(TYPES),
+    rooms: Math.round(getRandomNumber(MIN_ROOMS, MAX_ROOMS)),
+    guests: Math.round(getRandomNumber(MIN_GUESTS, MAX_GUESTS)),
+    checkin: getRandomElement(CHECKIN_TIME),
+    checkout: getRandomElement(CHECKOUT_TIME),
+    features: getRandomArray(FEATURES),
+    description: '',
+    photos: []
+  },
+  location: {
+    x: Math.round(getRandomNumber(LOCATION.x.min, LOCATION.x.max)),
+    y: Math.round(getRandomNumber(LOCATION.y.min, LOCATION.y.max))
+  }
+};
+
+var map = document.querySelector('.map');
+map.classList.remove('map--faded');
