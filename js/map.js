@@ -2,6 +2,8 @@
 
 var NUMBER_OF_ADVERTS = 8;
 var fragment = document.createDocumentFragment();
+var adverts = getAdverts(NUMBER_OF_ADVERTS);
+var map = document.querySelector('.map');
 
 function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
@@ -28,29 +30,6 @@ function getRandomArray(array) {
   return randomString;
 }
 
-/*var advert = {
-  author: {
-    getAvatar: 'img/avatars/user' + 0 + Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS)) + '.png'
-  },
-  offer: {
-    getTitle: getRandomElement(TITLES),
-    getAddress: location.x + ', ' + location.y,
-    getPrice: Math.round(getRandomNumber(MIN_PRICE, MAX_PRICE)),
-    getType: getRandomElement(TYPES),
-    getRooms: Math.round(getRandomNumber(MIN_ROOMS, MAX_ROOMS)),
-    getGuests: Math.round(getRandomNumber(MIN_GUESTS, MAX_GUESTS)),
-    getCheckin: getRandomElement(CHECKIN_TIME),
-    getCheckout: getRandomElement(CHECKOUT_TIME),
-    getFeatures: getRandomArray(FEATURES),
-    getDescription: '',
-    getPhotos: []
-  },
-  location: {
-    getX: Math.round(getRandomNumber(LOCATION.x.min, LOCATION.x.max)),
-    getY: Math.round(getRandomNumber(LOCATION.y.min, LOCATION.y.max))
-  }
-};*/
-
 function getRandomAdvert() {
   var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде', 'Проклятый старый дом'];
   var TYPES = ['flat', 'house', 'bungalo'];
@@ -63,16 +42,12 @@ function getRandomAdvert() {
   var CHECKIN_TIME = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var LOCATION = {
-    x: {
-      min: 300,
-      max: 900
-    },
-    y: {
-      min: 100,
-      max: 500
-    }
-  };
+  var LOCATION_X_MIN = 300;
+  var LOCATION_X_MAX = 900;
+  var LOCATION_Y_MIN = 100;
+  var LOCATION_Y_MAX = 500;
+  var locationX = Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX));
+  var locationY = Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX));
 
   return {
     author: {
@@ -80,7 +55,7 @@ function getRandomAdvert() {
     },
     offer: {
       title: getRandomElement(TITLES),
-      address: location.x + ', ' + location.y,
+      address: locationX + ', ' + locationY,
       price: Math.round(getRandomNumber(MIN_PRICE, MAX_PRICE)),
       type: getRandomElement(TYPES),
       rooms: Math.round(getRandomNumber(MIN_ROOMS, MAX_ROOMS)),
@@ -92,14 +67,15 @@ function getRandomAdvert() {
       photos: []
     },
     location: {
-      x: Math.round(getRandomNumber(LOCATION.x.min, LOCATION.x.max)),
-      y: Math.round(getRandomNumber(LOCATION.y.min, LOCATION.y.max))
+      x: locationX,
+      y: locationY
     }
   }
 }
 
 function getAdverts(amount) {
   var adverts = [];
+
   for (var i = 0; i < amount; i++) {
     adverts.push(getRandomAdvert());
   }
@@ -109,10 +85,7 @@ function getAdverts(amount) {
 
 getAdverts(NUMBER_OF_ADVERTS);
 
-var map = document.querySelector('.map');
 map.classList.remove('map--faded');
-
-var adverts = getAdverts(NUMBER_OF_ADVERTS);
 
 function addAdverts(array) {
   for (var i = 0; i < array.length; i++) {
@@ -138,8 +111,3 @@ function addAdverts(array) {
 addAdverts(adverts);
 
 document.querySelector('.map__pins').appendChild(fragment);
-
-
-/*<button style="left: {{location.x}}px; top: {{location.y}}px;" class="map__pin">
-  <img src="{{author.avatar}}" width="40" height="40" draggable="false">
-</button>*/
