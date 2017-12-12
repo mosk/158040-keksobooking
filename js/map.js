@@ -112,18 +112,30 @@ getAdverts(NUMBER_OF_ADVERTS);
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
-function addAdverts(array) {
-  for (var i = 0; i < array; i++) {
-    var newElement = document.createElement('button');
-    newElement.classList.add('map__pin');
-    newElement.style.left = array[i].location.x;
-    newElement.style.top = array[i].location.y;
+var adverts = getAdverts(NUMBER_OF_ADVERTS);
 
-    fragment.appendChild(newElement);
+function addAdverts(array) {
+  for (var i = 0; i < array.length; i++) {
+    var mapPin = document.createElement('button');
+    mapPin.classList.add('map__pin');
+    mapPin.style.left = array[i].location.x + 'px';
+    mapPin.style.top = array[i].location.y + 'px';
+
+    var avatar = document.createElement('img');
+    avatar.style.width = 40 + 'px';
+    avatar.style.height = 40 + 'px';
+    avatar.setAttribute('src', array[i].author.avatar)
+    avatar.setAttribute('draggable', 'false');
+
+    mapPin.appendChild(avatar);
+
+    fragment.appendChild(mapPin);
   }
 
   return fragment;
 }
+
+addAdverts(adverts);
 
 document.querySelector('.map__pins').appendChild(fragment);
 
