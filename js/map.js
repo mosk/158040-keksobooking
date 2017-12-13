@@ -43,16 +43,12 @@ function getRandomAdvert() {
   var CHECKIN_TIME = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var LOCATION = {
-    x: {
-      min: 300,
-      max: 900
-    },
-    y: {
-      min: 100,
-      max: 500
-    }
-  };
+  var LOCATION_X_MIN = 300;
+  var LOCATION_X_MAX = 900;
+  var LOCATION_Y_MIN = 100;
+  var LOCATION_Y_MAX = 500;
+/*  var locationX = Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX));
+  var locationY = Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX));*/
 
   return {
     author: {
@@ -72,8 +68,8 @@ function getRandomAdvert() {
       photos: []
     },
     location: {
-      x: Math.round(getRandomNumber(LOCATION.x.min, LOCATION.x.max)),
-      y: Math.round(getRandomNumber(LOCATION.y.min, LOCATION.y.max))
+      x: Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX)),
+      y: Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX))
     }
   }
 }
@@ -96,12 +92,12 @@ function renderAdvert(advert) {
   var advertPin = template.content.querySelector('.map__pin').cloneNode(true);
 /*  var advertPopup = template.content.querySelector('article').cloneNode(true);*/
 
-  advertPin.style.left = advert.location.x;
-  advertPin.style.top = advert.location.y;
+  advertPin.style.left = advert.location.x + 'px';
+  advertPin.style.top = advert.location.y + 'px';
   advertPin.querySelector('img').setAttribute('src', advert.author.avatar);
   advertPin.querySelector('img').setAttribute('draggable', 'false');
 
-  return advert;
+  return advertPin;
 }
 
 function renderAdverts(adverts) {
