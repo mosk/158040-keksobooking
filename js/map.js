@@ -1,7 +1,9 @@
 'use strict';
 
 var NUMBER_OF_ADVERTS = 8;
-var fragment = document.createDocumentFragment();
+var MAP = document.querySelector('.map');
+var MAP_PINS = document.querySelector('.map__pins')
+var ADVERTS = getAdverts(NUMBER_OF_ADVERTS);
 
 function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
@@ -28,29 +30,7 @@ function getRandomArray(array) {
   return randomString;
 }
 
-/*var advert = {
-  author: {
-    getAvatar: 'img/avatars/user' + 0 + Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS)) + '.png'
-  },
-  offer: {
-    getTitle: getRandomElement(TITLES),
-    getAddress: location.x + ', ' + location.y,
-    getPrice: Math.round(getRandomNumber(MIN_PRICE, MAX_PRICE)),
-    getType: getRandomElement(TYPES),
-    getRooms: Math.round(getRandomNumber(MIN_ROOMS, MAX_ROOMS)),
-    getGuests: Math.round(getRandomNumber(MIN_GUESTS, MAX_GUESTS)),
-    getCheckin: getRandomElement(CHECKIN_TIME),
-    getCheckout: getRandomElement(CHECKOUT_TIME),
-    getFeatures: getRandomArray(FEATURES),
-    getDescription: '',
-    getPhotos: []
-  },
-  location: {
-    getX: Math.round(getRandomNumber(LOCATION.x.min, LOCATION.x.max)),
-    getY: Math.round(getRandomNumber(LOCATION.y.min, LOCATION.y.max))
-  }
-};*/
-
+// получаем случайное объявление в видн объекта
 function getRandomAdvert() {
   var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде', 'Проклятый старый дом'];
   var TYPES = ['flat', 'house', 'bungalo'];
@@ -98,6 +78,7 @@ function getRandomAdvert() {
   }
 }
 
+// массив с объявлениями
 function getAdverts(amount) {
   var adverts = [];
   for (var i = 0; i < amount; i++) {
@@ -107,39 +88,30 @@ function getAdverts(amount) {
   return adverts;
 }
 
-getAdverts(NUMBER_OF_ADVERTS);
+MAP.classList.remove('map--faded');
 
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+// создаю объявление
+function renderAdvert(advert) {
+  var template = document.querySelector('template');
+  var advertPin = template.content.querySelector('.map__pin').cloneNode(true);
+/*  var advertPopup = template.content.querySelector('article').cloneNode(true);*/
 
-var adverts = getAdverts(NUMBER_OF_ADVERTS);
+  advertPin.style.left = advert.location.x;
+  advertPin.style.top = advert.location.y;
+  advertPin.querySelector('img').setAttribute('src', advert.author.avatar);
+  advertPin.querySelector('img').setAttribute('draggable', 'false');
 
-function addAdverts(array) {
-  for (var i = 0; i < array.length; i++) {
-    var mapPin = document.createElement('button');
-    mapPin.classList.add('map__pin');
-    mapPin.style.left = array[i].location.x + 'px';
-    mapPin.style.top = array[i].location.y + 'px';
+  return advert;
+}
 
-    var avatar = document.createElement('img');
-    avatar.style.width = 40 + 'px';
-    avatar.style.height = 40 + 'px';
-    avatar.setAttribute('src', array[i].author.avatar)
-    avatar.setAttribute('draggable', 'false');
+function renderAdverts(adverts) {
+  var fragment = document.createDocumentFragment();
 
-    mapPin.appendChild(avatar);
-
-    fragment.appendChild(mapPin);
+  for (var i = 0; i < adverts.length; i++) {
+    fragment.appendChild(renderAdvert(adverts[i]));
   }
 
   return fragment;
 }
 
-addAdverts(adverts);
-
-document.querySelector('.map__pins').appendChild(fragment);
-
-
-/*<button style="left: {{location.x}}px; top: {{location.y}}px;" class="map__pin">
-  <img src="{{author.avatar}}" width="40" height="40" draggable="false">
-</button>*/
+MAP_PINS.appendChild(renderAdverts(ADVERTS));
