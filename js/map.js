@@ -47,8 +47,6 @@ function getRandomAdvert() {
   var LOCATION_X_MAX = 900;
   var LOCATION_Y_MIN = 100;
   var LOCATION_Y_MAX = 500;
-/*  var locationX = Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX));
-  var locationY = Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX));*/
 
   return {
     author: {
@@ -86,11 +84,10 @@ function getAdverts(amount) {
 
 MAP.classList.remove('map--faded');
 
-// создаю объявление
-function renderAdvert(advert) {
+// создаю метку с объявлением
+function renderAdvertPin(advert) {
   var template = document.querySelector('template');
   var advertPin = template.content.querySelector('.map__pin').cloneNode(true);
-/*  var advertPopup = template.content.querySelector('article').cloneNode(true);*/
 
   advertPin.style.left = advert.location.x + 'px';
   advertPin.style.top = advert.location.y + 'px';
@@ -100,14 +97,34 @@ function renderAdvert(advert) {
   return advertPin;
 }
 
-function renderAdverts(adverts) {
+function renderAdvertArticle(advert) {
+  var template = document.querySelector('template');
+  var advertArticle = template.content.querySelector('.map__card').cloneNode(true);
+
+  advertArticle.querySelector('h3').textContent = advert.offer.title;
+  advertArticle.querySelector('p').textContent = advert.offer.address;
+  advertArticle.querySelector('.popup__price').textContent = advert.offer.price + '&#x20bd;/ночь';
+
+  return advertArticle;
+}
+
+function renderAdvertPins(adverts) {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < adverts.length; i++) {
-    fragment.appendChild(renderAdvert(adverts[i]));
+    fragment.appendChild(renderAdvertPin(adverts[i]));
   }
 
   return fragment;
 }
 
-MAP_PINS.appendChild(renderAdverts(ADVERTS));
+function renderAdvertArticles(adverts) {
+  var fragment = document.createDocumentFragment();
+
+  fragment.appendChild(renderAdvertsArticle(adverts[0]));
+
+  return fragment;
+}
+
+MAP_PINS.appendChild(renderAdvertPins(ADVERTS));
+MAP.insertBefore(renderAdvertArticles(ADVERTS), querySelector('.map__filters-container'));
