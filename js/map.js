@@ -1,8 +1,8 @@
 'use strict';
 
 var NUMBER_OF_ADVERTS = 8;
-var MAP = document.querySelector('.map');
-var MAP_PINS = document.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
 var ADVERTS = getAdverts(NUMBER_OF_ADVERTS);
 
 function getRandomNumber(min, max) {
@@ -15,19 +15,16 @@ function getRandomElement(array) {
   return array[randomNumber];
 }
 
-function getRandomArray(array) {
-  var randomString = [];
-  var randomElement = randomString[i];
+function getNewArray(array) {
+  var newArray = [];
 
-  for (var i = 0; i < Math.round(getRandomNumber(0, array.length - 1)); i++) {
-    var newElement = getRandomElement(array);
-    if (newElement !== randomElement) {
-      randomElement = newElement;
-      randomString.push(randomElement);
+  for (var i = 0; i < array.length; i++) {
+    if (Math.round(Math.random(0, 1)) === 1) {
+      newArray.push(array[i]);
     }
   }
 
-  return randomString;
+  return newArray;
 }
 
 // получаем случайное объявление в видн объекта
@@ -37,9 +34,9 @@ function getRandomAdvert() {
   var MIN_PRICE = 0;
   var MAX_PRICE = 1000;
   var MIN_ROOMS = 1;
-  var MAX_ROOMS = 30;
+  var MAX_ROOMS = 5;
   var MIN_GUESTS = 0;
-  var MAX_GUESTS = 300;
+  var MAX_GUESTS = 100;
   var CHECKIN_TIME = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -61,7 +58,7 @@ function getRandomAdvert() {
       guests: Math.round(getRandomNumber(MIN_GUESTS, MAX_GUESTS)),
       checkin: getRandomElement(CHECKIN_TIME),
       checkout: getRandomElement(CHECKOUT_TIME),
-      features: getRandomArray(FEATURES),
+      features: getNewArray(FEATURES),
       description: '',
       photos: []
     },
@@ -69,7 +66,7 @@ function getRandomAdvert() {
       x: Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX)),
       y: Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX))
     }
-  }
+  };
 }
 
 // массив с объявлениями
@@ -86,9 +83,11 @@ function getAdverts(amount) {
 function renderAdvertPin(advert) {
   var template = document.querySelector('template');
   var advertPin = template.content.querySelector('.map__pin').cloneNode(true);
+  var advertPinWidth = 48;
+  var advertPinHeight = 60;
 
-  advertPin.style.left = advert.location.x + 'px';
-  advertPin.style.top = advert.location.y + 'px';
+  advertPin.style.left = advert.location.x + advertPinWidth / 2 + 'px';
+  advertPin.style.top = advert.location.y - advertPinHeight + 'px';
   advertPin.querySelector('img').setAttribute('src', advert.author.avatar);
   advertPin.querySelector('img').setAttribute('draggable', 'false');
 
@@ -96,51 +95,77 @@ function renderAdvertPin(advert) {
 }
 
 function getOfferType(type) {
-  var TYPES = [
-    ['flat', 'house', 'bungalo'],
-    ['Квартира', 'Бунгало', 'Дом']
-  ];
+  var TYPES = {
+    items: ['flat', 'house', 'bungalo'],
+    names: ['Квартира', 'Бунгало', 'Дом']
+  };
 
-  for (var i = 0; i < TYPES[0].length; i++) {
-    if (type === TYPES[0][i]) {
-      return TYPES[1][i];
+  for (var i = 0; i < TYPES.items.length; i++) {
+    if (type === TYPES.items[i]) {
+      var typeName = TYPES.names[i];
     }
   }
+
+  return typeName;
 }
 
-// плохо работающая проверка
+// проверка на окончание (в задание такого нет - сделал для себя)
 function getRightEnding(number) {
   var stringNumber = String(number);
-  var lastNumber = stringNumber.charAt(stringNumber.length - 1);
-  console.log(lastNumber);
-  var preLastNumber = stringNumber.charAt(stringNumber.length - 2);
-  console.log(preLastNumber);
+  var lastNumber = +stringNumber.charAt(stringNumber.length - 1);
+  var preLastNumber = +stringNumber.charAt(stringNumber.length - 2);
 
-  if (+preLastNumber === 1 || +lastNumber == 5 || 6 || 7 || 8 || 9 || 0) {
+  if ([1].indexOf(preLastNumber) > -1 || [5, 6, 7, 8, 9, 0].indexOf(lastNumber) > -1) {
     return '';
-  } else if (+lastNumber === 1) {
-    return 'а';
-  } else if (+lastNumber === 2 || 3 || 4) {
-    return 'ы';
   }
+
+  if (lastNumber === 1) {
+    return 'а';
+  }
+
+  return 'ы';
 }
 
 function renderAdvertArticle(advert) {
   var template = document.querySelector('template');
   var advertArticle = template.content.querySelector('.map__card').cloneNode(true);
+  var advertTitle = advertArticle.querySelector('h3');
+  var advertAddress = advertArticle.querySelector('p');
+  var advertPrice = advertArticle.querySelector('.popup__price');
+  var advertType = advertArticle.querySelector('h4');
+  var advertRooms = advertArticle.querySelector(':nth-child(7)');
+  var advertCheckin = advertArticle.querySelector(':nth-child(8)');
+  var advertDescription = advertArticle.querySelector(':nth-child(10)');
+  var advertAvatar = advertArticle.querySelector('.popup__avatar');
+  var advertFeatures = advertArticle.querySelector('.popup__features');
 
-  advertArticle.querySelector('h3').textContent = advert.offer.title;
-  advertArticle.querySelector('p').textContent = advert.offer.address;
-  advertArticle.querySelector('.popup__price').textContent = advert.offer.price + ' &#x20bd;/ночь';
-  advertArticle.querySelector('h4').textContent = getOfferType(advert.offer.type);
-  advertArticle.querySelector(':nth-child(7)').textContent = advert.offer.rooms + ' комнат' + getRightEnding(advert.offer.rooms) + ' для ' + advert.offer.guests + ' гостей';
-  advertArticle.querySelector(':nth-child(8)').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
+  advertArticle.classList.add('card');
+  advertTitle.classList.add('card__title');
+  advertTitle.textContent = advert.offer.title;
+  advertAddress.classList.add('card__address');
+  advertAddress.textContent = advert.offer.address;
 
-/*  advertArticle.querySelector('.popup__features').removeChild('li');*/
-/*  for (var i = 0; i < advert.offer.features.length - 1; i++) {
-    if (advert.offer.features[i] !== advertArticle.querySelector('.popup__features::nth-child(' + (i + 1) + ')').classList.)
-    contains('feature feature--' + advert.offer.features[i]);
-  };*/
+  advertPrice.textContent = advert.offer.price + ' &#x20bd;/ночь';
+  advertType.textContent = getOfferType(advert.offer.type);
+  advertRooms.textContent = advert.offer.rooms + ' комнат' + getRightEnding(advert.offer.rooms) + ' для ' + advert.offer.guests + ' гостей';
+  advertCheckin.textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
+
+  advertDescription.classList.add('card__description');
+  advertDescription.textContent = advert.offer.description;
+  advertAvatar.setAttribute('src', advert.author.avatar);
+
+  advertArticle.removeChild(advertFeatures);
+
+  var newAdvertFeatures = document.createElement('ul');
+  newAdvertFeatures.classList.add('popup__features');
+  advertArticle.insertBefore(newAdvertFeatures, advertDescription);
+
+  for (var i = 0; i < advert.offer.features.length; i++) {
+    var advertFeature = document.createElement('li');
+    advertFeature.classList.add('feature');
+    advertFeature.classList.add('feature--' + advert.offer.features[i]);
+    newAdvertFeatures.appendChild(advertFeature);
+  }
 
   return advertArticle;
 }
@@ -163,6 +188,6 @@ function renderAdvertArticles(adverts) {
   return fragment;
 }
 
-MAP.classList.remove('map--faded');
-MAP_PINS.appendChild(renderAdvertPins(ADVERTS));
-MAP.insertBefore(renderAdvertArticles(ADVERTS), MAP.querySelector('.map__filters-container'));
+map.classList.remove('map--faded');
+mapPins.appendChild(renderAdvertPins(ADVERTS));
+map.insertBefore(renderAdvertArticles(ADVERTS), map.querySelector('.map__filters-container'));
