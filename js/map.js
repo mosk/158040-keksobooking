@@ -3,6 +3,7 @@
 var NUMBER_OF_ADVERTS = 8;
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
+var mapFiltersContainer = map.querySelector('.map__filters-container');
 var adverts = getAdverts(NUMBER_OF_ADVERTS);
 
 function getRandomNumber(min, max) {
@@ -44,18 +45,11 @@ function getRandomAdvert() {
   var LOCATION_X_MAX = 900;
   var LOCATION_Y_MIN = 100;
   var LOCATION_Y_MAX = 500;
-
-  function getNewSrc(initialSrc, number, srcEnding) {
-    if (number > 9) {
-      return initialSrc + number + srcEnding;
-    }
-
-    return initialSrc + '0' + number + srcEnding;
-  }
+  var number = Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS));
 
   return {
     author: {
-      avatar: getNewSrc('img/avatars/user', Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS)), '.png')
+      avatar: 'img/avatars/user' + (number > 9 ? '' : '0') + number + '.png'
     },
     offer: {
       title: getRandomElement(TITLES),
@@ -80,9 +74,9 @@ function getRandomAdvert() {
 // массив с объявлениями
 function getAdverts(amount) {
   var advertsArray = [];
+
   for (var i = 0; i < amount; i++) {
-    var newAdvert = getRandomAdvert();
-    advertsArray.push(newAdvert);
+    advertsArray.push(getRandomAdvert());
   }
 
   return advertsArray;
@@ -94,7 +88,7 @@ function renderAdvertPin(advert) {
   var advertPin = template.content.querySelector('.map__pin').cloneNode(true);
   var advertPinOffsetY = 38; // расстояние от центра пина до острия маркера
 
-  advertPin.style.left = advert.location.x + 'px'; // У 'map__pin' свойство 'transform: translate(-50%, -50%)', следовательно старый вариант не нужен? старый вариант *** advertPin.style.left = advert.location.x + advertPinWidth / 2 + 'px'; ***
+  advertPin.style.left = advert.location.x + 'px'; // У 'map__pin' свойство 'transform: translate(-50%, -50%)', следовательно координата по оси x указывает на центр маркера.
   advertPin.style.top = advert.location.y - advertPinOffsetY + 'px';
   advertPin.querySelector('img').setAttribute('src', advert.author.avatar);
   advertPin.querySelector('img').setAttribute('draggable', 'false');
@@ -109,14 +103,7 @@ function getOfferType(type) {
     bungalo: 'Бунгало'
   };
 
-  for (var i = 0; i < Object.keys(TYPES).length; i++) {
-    if (type === Object.keys(TYPES)[i]) {
-      var typeKey = Object.keys(TYPES)[i];
-      var typeName = TYPES[typeKey];
-    }
-  }
-
-  return typeName;
+  return TYPES[type];
 }
 
 // проверка на окончание (в задании такого нет - сделал для себя)
@@ -191,5 +178,8 @@ function renderAdvertPins(advertsArray) {
 }
 
 map.classList.remove('map--faded');
-mapPins.appendChild(renderAdvertPins(adverts));
-map.insertBefore(renderAdvertArticle(adverts[0]), map.querySelector('.map__filters-container'));
+
+if (adverts.length > 0) {
+  mapPins.appendChild(renderAdvertPins(adverts));
+  map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
+}
