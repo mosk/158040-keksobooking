@@ -124,7 +124,8 @@ function getRightEnding(number) {
 }
 
 function renderAdvertArticle(advert) {
-  var template = document.querySelector('template');
+  var SYMBOL_RUBLE = '\u20bd';
+  var template = document.querySelector('#advertTemplate');
   var advertArticle = template.content.querySelector('.map__card').cloneNode(true);
   var advertTitle = advertArticle.querySelector('.card__title');
   var advertAddress = advertArticle.querySelector('.card__address');
@@ -140,7 +141,7 @@ function renderAdvertArticle(advert) {
   advertTitle.textContent = advert.offer.title;
   advertAddress.textContent = advert.offer.address;
 
-  advertPrice.textContent = advert.offer.price + ' &#x20bd;/ночь';
+  advertPrice.textContent = advert.offer.price + ' ' + SYMBOL_RUBLE + '/ночь';
   advertType.textContent = getOfferType(advert.offer.type);
 
   advertRooms.textContent = advert.offer.rooms + ' комнат' + getRightEnding(advert.offer.rooms) + ' для ' + advert.offer.guests + ' гостей';
