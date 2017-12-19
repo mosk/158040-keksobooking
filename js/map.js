@@ -97,13 +97,11 @@ function renderAdvertPin(advert) {
 }
 
 function getOfferType(type) {
-  var TYPES = {
+  return ({
     flat: 'Квартира',
     house: 'Дом',
     bungalo: 'Бунгало'
-  };
-
-  return TYPES[type];
+  })[type];
 }
 
 // проверка на окончание (в задании такого нет - сделал для себя)
@@ -155,7 +153,7 @@ function renderAdvertArticle(advert) {
   var newAdvertFeatures = document.createElement('ul');
   newAdvertFeatures.classList.add('popup__features');
   advertArticle.insertBefore(newAdvertFeatures, advertDescription);
-
+  // ВАЖНО "надо делать проверку во-первых чтобы в advert был offer, во вторых чтобы в нем были features"
   for (var i = 0; i < advert.offer.features.length; i++) {
     var advertFeature = document.createElement('li');
     advertFeature.classList.add('feature');
@@ -178,9 +176,33 @@ function renderAdvertPins(advertsArray) {
   return fragment;
 }
 
-map.classList.remove('map--faded');
+// события
+var mapPinMain = map.querySelector('.map__pin--main');
+var advertForm = document.querySelector('.notice__form');
+var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
 
-if (adverts.length > 0) {
-  mapPins.appendChild(renderAdvertPins(adverts));
-  map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
+function activateAdvertForm() {
+  for (var i = 0; i < advertFormFieldsets.length; i++) {
+    advertFormFieldsets[i].removeAttribute('disabled');
+  }
 }
+
+mapPinMain.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  advertForm.classList.remove('notice__form--disabled');
+  activateAdvertForm();
+
+  if (adverts.length > 0) {
+    mapPins.appendChild(renderAdvertPins(adverts));
+  }
+});
+
+mapPins.addEventListener('click', function (evt) {
+  if (evt.target.classList.contains('map__pin') && (evt.target.classList.contains('map__pin--active') === false)) {
+    evt.target.classList.add('map__pin--active');
+  } else {
+    evt.target.parentNode.add('map__pin--active');
+  }
+})
+// map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
+
