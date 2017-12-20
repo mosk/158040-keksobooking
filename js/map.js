@@ -170,7 +170,9 @@ function renderAdvertPins(advertsArray) {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < advertsArray.length; i++) {
-    fragment.appendChild(renderAdvertPin(advertsArray[i]));
+    var advertPin = renderAdvertPin(advertsArray[i]);
+    advertPin.setAttribute('data-id', i);
+    fragment.appendChild(advertPin);
   }
 
   return fragment;
@@ -180,6 +182,7 @@ function renderAdvertPins(advertsArray) {
 var mapPinMain = map.querySelector('.map__pin--main');
 var advertForm = document.querySelector('.notice__form');
 var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
+var popup = map.querySelector('.popup');
 
 function activateAdvertForm() {
   for (var i = 0; i < advertFormFieldsets.length; i++) {
@@ -188,32 +191,26 @@ function activateAdvertForm() {
 }
 
 function onPinClick(evt) {
-  deactivatePin();
-  activatePin(evt);
-  closePopup();
-  openPopup(evt);
-}
-
-function activatePin(evt) {
-  evt.target.classList.add('map__pin--active');
-}
-
-function deactivatePin() {
   var activePin = mapPins.querySelector('.map__pin--active');
+  var popupClose;
 
   if (activePin) {
     activePin.classList.remove('map__pin--active');
   }
+
+  evt.target.classList.add('map__pin--active');
+
+  closePopup();
+
+  if (evt.target.classList.contains('map__pin')) {
+    map.insertBefore(renderAdvertArticle(adverts[evt.target.dataset.id]), mapFiltersContainer);
+  }
+
+  popupClose = map.querySelector('.popup__close');
 }
 
-function openPopup(evt) {
-  if (evt.target.classList.contains('map__pin')) {
-    map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
-
-    var popup = map.querySelector('.popup');
-    var popupClose = popup.querySelector('.popup__close');
-    popupClose.addEventListener('click', closePopup);
-  }
+function onPopupCloseClick() {
+  closePopup();
 }
 
 function closePopup() {
