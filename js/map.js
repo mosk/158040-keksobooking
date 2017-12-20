@@ -208,7 +208,6 @@ function deactivatePin() {
 
 function openPopup(evt) {
   if (evt.target.classList.contains('map__pin')) {
-    console.log('Показ попапа');
     map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
 
     var popup = map.querySelector('.popup');
@@ -217,7 +216,7 @@ function openPopup(evt) {
   }
 }
 
-function closePopup() {;
+function closePopup() {
   var activePopup = map.querySelector('.popup');
 
   if (activePopup) {
@@ -236,6 +235,3 @@ mapPinMain.addEventListener('mouseup', function () {
 });
 
 mapPins.addEventListener('click', onPinClick);
-
-
-
