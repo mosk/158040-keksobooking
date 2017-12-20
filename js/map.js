@@ -1,10 +1,14 @@
 'use strict';
 
 var NUMBER_OF_ADVERTS = 8;
+var ESC_KEYCODE = 27;
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var mapFiltersContainer = map.querySelector('.map__filters-container');
 var adverts = getAdverts(NUMBER_OF_ADVERTS);
+var mapPinMain = map.querySelector('.map__pin--main');
+var advertForm = document.querySelector('.notice__form');
+var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
 
 function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
@@ -178,13 +182,9 @@ function renderAdvertPins(advertsArray) {
   return fragment;
 }
 
-// события
-var mapPinMain = map.querySelector('.map__pin--main');
-var advertForm = document.querySelector('.notice__form');
-var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
-var popup = map.querySelector('.popup');
-
 function activateAdvertForm() {
+  advertForm.classList.remove('notice__form--disabled');
+
   for (var i = 0; i < advertFormFieldsets.length; i++) {
     advertFormFieldsets[i].removeAttribute('disabled');
   }
@@ -192,25 +192,38 @@ function activateAdvertForm() {
 
 function onPinClick(evt) {
   var activePin = mapPins.querySelector('.map__pin--active');
-  var popupClose;
+  var activePopup = map.querySelector('.popup');
 
   if (activePin) {
     activePin.classList.remove('map__pin--active');
   }
 
-  evt.target.classList.add('map__pin--active');
-
-  closePopup();
-
   if (evt.target.classList.contains('map__pin')) {
-    map.insertBefore(renderAdvertArticle(adverts[evt.target.dataset.id]), mapFiltersContainer);
+    evt.target.classList.add('map__pin--active');
+  } else if (evt.target.parentNode.classList.contains('map__pin')) {
+    evt.target.parentNode.classList.add('map__pin--active');
   }
 
-  popupClose = map.querySelector('.popup__close');
+  if (activePopup) {
+    activePopup.remove();
+  }
+
+  if (mapPins.querySelector('.map__pin--active')) {
+    map.insertBefore(renderAdvertArticle(adverts[mapPins.querySelector('.map__pin--active').dataset.id]), mapFiltersContainer);
+  }
+
+  map.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
+  map.querySelector('.popup').addEventListener('keydown', onPopupEsc);
 }
 
 function onPopupCloseClick() {
   closePopup();
+}
+
+function onPopupEsc(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
 }
 
 function closePopup() {
@@ -218,12 +231,12 @@ function closePopup() {
 
   if (activePopup) {
     activePopup.remove();
+    mapPins.querySelector('.map__pin--active').classList.remove('map__pin--active');
   }
 }
 
 mapPinMain.addEventListener('mouseup', function () {
   map.classList.remove('map--faded');
-  advertForm.classList.remove('notice__form--disabled');
   activateAdvertForm();
 
   if (adverts.length > 0) {
@@ -232,3 +245,4 @@ mapPinMain.addEventListener('mouseup', function () {
 });
 
 mapPins.addEventListener('click', onPinClick);
+
