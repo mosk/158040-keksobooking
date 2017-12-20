@@ -187,6 +187,44 @@ function activateAdvertForm() {
   }
 }
 
+function onPinClick(evt) {
+  deactivatePin();
+  activatePin(evt);
+  closePopup();
+  openPopup(evt);
+}
+
+function activatePin(evt) {
+  evt.target.classList.add('map__pin--active');
+}
+
+function deactivatePin() {
+  var activePin = mapPins.querySelector('.map__pin--active');
+
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
+  }
+}
+
+function openPopup(evt) {
+  if (evt.target.classList.contains('map__pin')) {
+    console.log('Показ попапа');
+    map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
+
+    var popup = map.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', closePopup);
+  }
+}
+
+function closePopup() {;
+  var activePopup = map.querySelector('.popup');
+
+  if (activePopup) {
+    activePopup.remove();
+  }
+}
+
 mapPinMain.addEventListener('mouseup', function () {
   map.classList.remove('map--faded');
   advertForm.classList.remove('notice__form--disabled');
@@ -197,12 +235,7 @@ mapPinMain.addEventListener('mouseup', function () {
   }
 });
 
-mapPins.addEventListener('click', function (evt) {
-  if (evt.target.classList.contains('map__pin') && (evt.target.classList.contains('map__pin--active') === false)) {
-    evt.target.classList.add('map__pin--active');
-  } else {
-    evt.target.parentNode.add('map__pin--active');
-  }
-})
-// map.insertBefore(renderAdvertArticle(adverts[0]), mapFiltersContainer);
+mapPins.addEventListener('click', onPinClick);
+
+
 
