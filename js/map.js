@@ -4,6 +4,7 @@ var NUMBER_OF_ADVERTS = 8;
 var ESC_KEYCODE = 27;
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
+var mapPin = mapPins.querySelector('.map__pin');
 var mapFiltersContainer = map.querySelector('.map__filters-container');
 var adverts = getAdverts(NUMBER_OF_ADVERTS);
 var mapPinMain = map.querySelector('.map__pin--main');
@@ -49,6 +50,8 @@ function getRandomAdvert() {
   var LOCATION_X_MAX = 900;
   var LOCATION_Y_MIN = 100;
   var LOCATION_Y_MAX = 500;
+  var locationX = Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX));
+  var locationY = Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX));
   var number = Math.round(getRandomNumber(1, NUMBER_OF_ADVERTS));
 
   return {
@@ -57,7 +60,7 @@ function getRandomAdvert() {
     },
     offer: {
       title: getRandomElement(TITLES),
-      address: location.x + ', ' + location.y,
+      address: locationX + ', ' + locationY,
       price: Math.round(getRandomNumber(MIN_PRICE, MAX_PRICE)),
       type: getRandomElement(TYPES),
       rooms: Math.round(getRandomNumber(MIN_ROOMS, MAX_ROOMS)),
@@ -69,8 +72,8 @@ function getRandomAdvert() {
       photos: []
     },
     location: {
-      x: Math.round(getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX)),
-      y: Math.round(getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX))
+      x: locationX,
+      y: locationY
     }
   };
 }
@@ -198,11 +201,13 @@ function onPinClick(evt) {
     activePin.classList.remove('map__pin--active');
   }
 
-  if (evt.target.classList.contains('map__pin')) {
+  evt.currentTarget.classList.add('map__pin--active');
+
+/*  if (evt.target.classList.contains('map__pin')) {
     evt.target.classList.add('map__pin--active');
   } else if (evt.target.parentNode.classList.contains('map__pin')) {
     evt.target.parentNode.classList.add('map__pin--active');
-  }
+  }*/
 
   if (activePopup) {
     activePopup.remove();
@@ -213,14 +218,14 @@ function onPinClick(evt) {
   }
 
   map.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
-  map.querySelector('.popup').addEventListener('keydown', onPopupEsc);
+  map.querySelector('.popup').addEventListener('keydown', onPopupKeydown);
 }
 
 function onPopupCloseClick() {
   closePopup();
 }
 
-function onPopupEsc(evt) {
+function onPopupKeydown(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closePopup();
   }
@@ -244,5 +249,6 @@ mapPinMain.addEventListener('mouseup', function () {
   }
 });
 
-mapPins.addEventListener('click', onPinClick);
+/*mapPins.addEventListener('click', onPinClick);*/
+mapPin.addEventListener('click', onPinClick);
 
