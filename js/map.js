@@ -200,12 +200,15 @@ function activateAdvertForm() {
 
 function syncAdvertForm() {
   formAdAddress.setAttribute('value', getCoords(mapPinMain));
-}
+};
 
-/*formAdTimein.addEventListener('change', function (evt) {
-  console.log(evt.target);
-  formAdTimeout.querySelector('option[value=' + evt.target.getAttribute('value') + ']');
-})*/
+formAdTimein.addEventListener('change', function (evt) {
+  formAdTimeout.value = evt.target.value;
+})
+
+formAdTimeout.addEventListener('change', function (evt) {
+  formAdTimein.value = evt.target.value;
+})
 
 function onPinClick(evt) {
   var activePin = mapPins.querySelector('.map__pin--active');
@@ -245,6 +248,8 @@ function closePopup() {
   var activePopup = map.querySelector('.popup');
 
   if (activePopup) {
+    activePopup.querySelector('.popup__close').removeEventListener('click', onPopupCloseClick);
+    activePopup.removeEventListener('keydown', onPopupKeydown);
     activePopup.remove();
     mapPins.querySelector('.map__pin--active').classList.remove('map__pin--active');
   }
