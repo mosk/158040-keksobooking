@@ -183,7 +183,7 @@ function renderAdvertPins(advertsArray) {
 
   for (var i = 0; i < advertsArray.length; i++) {
     var advertPin = renderAdvertPin(advertsArray[i]);
-    advertPin.setAttribute('data-id', i);
+    advertPin.setAttribute('data-id', advertPin);
     fragment.appendChild(advertPin);
   }
 
@@ -202,14 +202,6 @@ function syncAdvertForm() {
   formAdAddress.setAttribute('value', getCoords(mapPinMain));
 };
 
-formAdTimein.addEventListener('change', function (evt) {
-  formAdTimeout.value = evt.target.value;
-})
-
-formAdTimeout.addEventListener('change', function (evt) {
-  formAdTimein.value = evt.target.value;
-})
-
 function onPinClick(evt) {
   var activePin = mapPins.querySelector('.map__pin--active');
   var activePopup = map.querySelector('.popup');
@@ -226,8 +218,10 @@ function onPinClick(evt) {
     evt.target.parentNode.classList.add('map__pin--active');
   }
 
+  activePin = mapPins.querySelector('.map__pin--active'); // обновить пин
+
   if (mapPins.querySelector('.map__pin--active')) {
-    map.insertBefore(renderAdvertArticle(adverts[mapPins.querySelector('.map__pin--active').dataset.id]), mapFiltersContainer);
+    map.insertBefore(renderAdvertArticle(activePin.dataset.id), mapFiltersContainer);
   }
 
   map.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
@@ -259,7 +253,7 @@ function getCoords(elem) {
   return getComputedStyle(elem).left + ', ' + getComputedStyle(elem).top;
 }
 
-function onMapPinMainFirstMouseup() {
+function onPinMouseup() {
   map.classList.remove('map--faded');
   activateAdvertForm();
 
@@ -268,11 +262,18 @@ function onMapPinMainFirstMouseup() {
   }
 }
 
-mapPinMain.addEventListener('mouseup', onMapPinMainFirstMouseup);
+mapPinMain.addEventListener('mouseup', onPinMouseup);
 mapPinMain.addEventListener('mouseup', function () {
   formAdAddress.setAttribute('value', getCoords(mapPinMain));
-  mapPinMain.removeEventListener('mouseup', onMapPinMainFirstMouseup);
+  mapPinMain.removeEventListener('mouseup', onPinMouseup);
 });
 
 mapPins.addEventListener('click', onPinClick);
 
+formAdTimein.addEventListener('change', function (evt) {
+  formAdTimeout.value = evt.target.value;
+})
+
+formAdTimeout.addEventListener('change', function (evt) {
+  formAdTimein.value = evt.target.value;
+})
