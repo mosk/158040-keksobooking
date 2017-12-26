@@ -165,7 +165,7 @@ function renderAdvertArticle(advert) {
   var newAdvertFeatures = document.createElement('ul');
   newAdvertFeatures.classList.add('popup__features');
   advertArticle.insertBefore(newAdvertFeatures, advertDescription);
-  // ВАЖНО "надо делать проверку во-первых чтобы в advert был offer, во вторых чтобы в нем были features"
+
   for (var i = 0; i < advert.offer.features.length; i++) {
     var advertFeature = document.createElement('li');
     advertFeature.classList.add('feature');
@@ -183,7 +183,7 @@ function renderAdvertPins(advertsArray) {
 
   for (var i = 0; i < advertsArray.length; i++) {
     var advertPin = renderAdvertPin(advertsArray[i]);
-    advertPin.setAttribute('data-id', advertPin);
+    advertPin.setAttribute('data-id', i);
     fragment.appendChild(advertPin);
   }
 
@@ -198,31 +198,30 @@ function activateAdvertForm() {
   }
 }
 
-function syncAdvertForm() {
-  formAdAddress.setAttribute('value', getCoords(mapPinMain));
-};
-
 function onPinClick(evt) {
   var activePin = mapPins.querySelector('.map__pin--active');
-  var activePopup = map.querySelector('.popup');
+  var target = evt.target;
 
   closePopup();
-
   if (activePin) {
     activePin.classList.remove('map__pin--active');
   }
 
-  if (evt.target.classList.contains('map__pin')) {
-    evt.target.classList.add('map__pin--active');
-  } else if (evt.target.parentNode.classList.contains('map__pin')) {
-    evt.target.parentNode.classList.add('map__pin--active');
+  while (target !== evt.currentTarget) {
+    if (target.classList.contains('map__pin')) {
+      target.classList.add('map__pin--active');
+
+      break;
+    }
+    target = target.parentNode;
   }
 
   activePin = mapPins.querySelector('.map__pin--active'); // обновить пин
 
-  if (mapPins.querySelector('.map__pin--active')) {
-    map.insertBefore(renderAdvertArticle(activePin.dataset.id), mapFiltersContainer);
+  if (activePin) {
+    map.insertBefore(renderAdvertArticle(adverts[activePin.dataset.id]), mapFiltersContainer);
   }
+  /* "А во-вторых, в dataset вообще-то можно было положить сразу знание об advert и не опираться на какие-то глобальные знания. (Помнишь что если ты используешь переменную из внешней области видимости - скорее всего, что-то идет не так)". Нужно положить в датасет само объявление? Если я пишу setAttribute('data-id', advert) - на выходе получаю не то, что нужно. Как быть? */
 
   map.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
   map.querySelector('.popup').addEventListener('keydown', onPopupKeydown);
@@ -272,8 +271,8 @@ mapPins.addEventListener('click', onPinClick);
 
 formAdTimein.addEventListener('change', function (evt) {
   formAdTimeout.value = evt.target.value;
-})
+});
 
 formAdTimeout.addEventListener('change', function (evt) {
   formAdTimein.value = evt.target.value;
-})
+});
