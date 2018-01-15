@@ -8,7 +8,6 @@ var mapPins = document.querySelector('.map__pins');
 var mapFiltersContainer = map.querySelector('.map__filters-container');
 var adverts = getAdverts(NUMBER_OF_ADVERTS);
 var advertForm = document.querySelector('.notice__form');
-var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
 // для формы
 var formAdAddress = advertForm.querySelector('#address');
 var formAdTitle = advertForm.querySelector('#title');
@@ -183,7 +182,7 @@ function renderAdvertPins(advertsArray) {
 
   for (var i = 0; i < advertsArray.length; i++) {
     var advertPin = renderAdvertPin(advertsArray[i]);
-    advertPin.setAttribute('data-id', i);
+    advertPin.setAttribute('data-id', JSON.stringify(advertsArray[i]));
     fragment.appendChild(advertPin);
   }
 
@@ -191,6 +190,8 @@ function renderAdvertPins(advertsArray) {
 }
 
 function activateAdvertForm() {
+  var advertFormFieldsets = advertForm.querySelectorAll('fieldset');
+
   advertForm.classList.remove('notice__form--disabled');
 
   for (var i = 0; i < advertFormFieldsets.length; i++) {
@@ -219,9 +220,8 @@ function onPinClick(evt) {
   activePin = mapPins.querySelector('.map__pin--active'); // обновить пин
 
   if (activePin) {
-    map.insertBefore(renderAdvertArticle(adverts[activePin.dataset.id]), mapFiltersContainer);
+    map.insertBefore(renderAdvertArticle(JSON.parse(activePin.dataset.id)), mapFiltersContainer);
   }
-  /* "А во-вторых, в dataset вообще-то можно было положить сразу знание об advert и не опираться на какие-то глобальные знания. (Помнишь что если ты используешь переменную из внешней области видимости - скорее всего, что-то идет не так)". Нужно положить в датасет само объявление? Если я пишу setAttribute('data-id', advert) - на выходе получаю не то, что нужно. Как быть? */
 
   map.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
   map.querySelector('.popup').addEventListener('keydown', onPopupKeydown);
@@ -240,12 +240,14 @@ function onPopupKeydown(evt) {
 function closePopup() {
   var activePopup = map.querySelector('.popup');
 
-  if (activePopup) {
-    activePopup.querySelector('.popup__close').removeEventListener('click', onPopupCloseClick);
-    activePopup.removeEventListener('keydown', onPopupKeydown);
-    activePopup.remove();
-    mapPins.querySelector('.map__pin--active').classList.remove('map__pin--active');
+  if (!activePopup) {
+    return;
   }
+
+  activePopup.querySelector('.popup__close').removeEventListener('click', onPopupCloseClick);
+  activePopup.removeEventListener('keydown', onPopupKeydown);
+  activePopup.remove();
+  mapPins.querySelector('.map__pin--active').classList.remove('map__pin--active');
 }
 
 function getCoords(elem) {
@@ -256,9 +258,7 @@ function onPinMouseup() {
   map.classList.remove('map--faded');
   activateAdvertForm();
 
-  if (adverts.length > 0) {
-    mapPins.appendChild(renderAdvertPins(adverts));
-  }
+  adverts.length > 0 && mapPins.appendChild(renderAdvertPins(adverts));
 }
 
 mapPinMain.addEventListener('mouseup', onPinMouseup);
