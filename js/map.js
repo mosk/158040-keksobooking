@@ -10,10 +10,10 @@ var adverts = getAdverts(NUMBER_OF_ADVERTS);
 var advertForm = document.querySelector('.notice__form');
 // для формы
 var formAdAddress = advertForm.querySelector('#address');
-var formAdTitle = advertForm.querySelector('#title');
-var formAdPrice = advertForm.querySelector('#price');
 var formAdTimein = advertForm.querySelector('#timein');
 var formAdTimeout = advertForm.querySelector('#timeout');
+var formAdType = advertForm.querySelector('#type');
+var formAdPrice = advertForm.querySelector('#price');
 
 function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
@@ -276,3 +276,15 @@ formAdTimein.addEventListener('change', function (evt) {
 formAdTimeout.addEventListener('change', function (evt) {
   formAdTimein.value = evt.target.value;
 });
+
+formAdType.addEventListener('change', function (evt) {
+  var wow = evt.target.value;
+  var price = {
+    'flat': '0',
+    'bungalo': '1000',
+    'house': '5000',
+    'palace': '10000'
+  };
+  formAdPrice.min = price.wow;
+});
+
