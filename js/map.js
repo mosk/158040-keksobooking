@@ -14,6 +14,8 @@ var formAdTimein = advertForm.querySelector('#timein');
 var formAdTimeout = advertForm.querySelector('#timeout');
 var formAdType = advertForm.querySelector('#type');
 var formAdPrice = advertForm.querySelector('#price');
+var formAdRooms = advertForm.querySelector('#room_number');
+var formAdCapacity = advertForm.querySelector('#capacity');
 
 function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
@@ -278,13 +280,15 @@ formAdTimeout.addEventListener('change', function (evt) {
 });
 
 formAdType.addEventListener('change', function (evt) {
-  var wow = evt.target.value;
-  var price = {
+  formAdPrice.min = {
     'flat': '0',
     'bungalo': '1000',
     'house': '5000',
     'palace': '10000'
-  };
-  formAdPrice.min = price.wow;
+  }[evt.target.value];
 });
+
+formAdRooms.addEventListener('change', function (evt) {
+  formAdCapacity.value = (evt.target.value === '100') ? 0 : evt.target.value;
+})
 
